@@ -15,9 +15,8 @@ fluentd:
   ingress:
     enabled: false
   image:
-    name: <path-to-fluentd-log-aggregator-image>
-    tag: latest
-    pullSecret: gitlab-reg-cred
+    name: eoliverio/fluentd-aggregator
+    tag: 1.0
   replicaCount: 1
   environment:
     # elasticsearch service name value is defined in templates as:
