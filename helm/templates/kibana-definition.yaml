@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ template "efkstack.name" . }}-{{ .Values.kibana.name }}
+    chart: {{ template "efkstack.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  name: {{ template "efkstack.kibana.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "efkstack.name" . }}-{{ .Values.kibana.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "efkstack.name" . }}-{{ .Values.kibana.name }}
+    spec:
+      containers:
+      - image: "{{ .Values.kibana.image.name }}:{{ .Values.kibana.image.tag }}"
+        name: {{ .Chart.Name }}-{{ .Values.kibana.name }}
+        ports:
+        - containerPort: 5601
+        env:
+        - name: "ELASTICSEARCH_URL"
+          value: {{ .Values.kibana.environment.elasticsearch }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: {{ template "efkstack.name" . }}-{{ .Values.kibana.name }}
+    chart: {{ template "efkstack.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  name: "{{ .Chart.Name }}-{{ .Values.kibana.name }}-svc"
+spec:
+  ports:
+  - protocol: TCP
+    port: 5601
+  selector:
+    app: {{ template "efkstack.name" . }}-{{ .Values.kibana.name }}
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-body-size: 50m
+    app: {{ template "efkstack.name" . }}-{{ .Values.kibana.name }}
+    chart: {{ template "efkstack.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  name: {{ .Chart.Name }}-{{ .Values.kibana.name }}
+spec:
+  rules:
+  - host: "{{ .Chart.Name }}-{{ .Values.kibana.name }}.com"
+    http:
+      paths:
+      - backend:
+          serviceName: "{{ .Chart.Name }}-{{ .Values.kibana.name }}-svc"
+          servicePort: 5601

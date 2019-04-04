@@ -1,0 +1,41 @@
+elasticsearch:
+  enabled: true
+  name: elasticsearch
+  ingress:
+    enabled: false
+  image:
+    name: docker.elastic.co/elasticsearch/elasticsearch
+    tag: 6.5.4
+  replicaCount: 1
+  resources: {}
+
+fluentd:
+  enabled: true
+  name: fluentd
+  ingress:
+    enabled: false
+  image:
+    name: <path-to-fluentd-log-aggregator-image>
+    tag: latest
+    pullSecret: gitlab-reg-cred
+  replicaCount: 1
+  environment:
+    # elasticsearch service name value is defined in templates as:
+    # "{{ .Chart.Name }}-{{ .Values.elasticsearch.name }}-svc"
+    elasticsearch_host: "efkstack-elasticsearch-svc.<namespace>.svc.cluster.local"
+  resources: {}
+
+kibana:
+  enabled: true
+  name: kibana
+  ingress:
+    enabled: true
+  image:
+    name: docker.elastic.co/kibana/kibana
+    tag: 6.5.4
+  replicaCount: 1
+  environment:
+    # elasticsearch service name value is defined in templates as:
+    # "{{ .Chart.Name }}-{{ .Values.elasticsearch.name }}-svc"
+    elasticsearch: "http://efkstack-elasticsearch-svc.<namespace>.svc.cluster.local:9200"
+  resources: {}

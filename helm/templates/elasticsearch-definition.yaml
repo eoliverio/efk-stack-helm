@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ template "efkstack.name" . }}-{{ .Values.elasticsearch.name }}
+    chart: {{ template "efkstack.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  name: {{ template "efkstack.elasticsearch.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "efkstack.name" . }}-{{ .Values.elasticsearch.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "efkstack.name" . }}-{{ .Values.elasticsearch.name }}
+    spec:
+      containers:
+      - image: "{{ .Values.elasticsearch.image.name }}:{{ .Values.elasticsearch.image.tag }}"
+        name: {{ .Chart.Name }}-{{ .Values.elasticsearch.name }}
+        ports:
+        - containerPort: 9200
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: {{ template "efkstack.name" . }}-{{ .Values.elasticsearch.name }}
+    chart: {{ template "efkstack.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  name: "{{ .Chart.Name }}-{{ .Values.elasticsearch.name }}-svc"
+spec:
+  ports:
+  - port: 9200
+  selector:
+    app: {{ template "efkstack.name" . }}-{{ .Values.elasticsearch.name }}

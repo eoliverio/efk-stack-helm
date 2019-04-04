@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ template "efkstack.name" . }}-{{ .Values.fluentd.name }}
+    chart: {{ template "efkstack.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  name: {{ template "efkstack.fluentd.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "efkstack.name" . }}-{{ .Values.fluentd.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "efkstack.name" . }}-{{ .Values.fluentd.name }}
+    spec:
+      containers:
+      - image: "{{ .Values.fluentd.image.name }}:{{ .Values.fluentd.image.tag }}"
+        name: {{ .Chart.Name }}-{{ .Values.fluentd.name }}
+        ports:
+        - containerPort: 24224
+        env:
+        - name: "ELASTICSEARCH_HOST"
+          value: {{ .Values.fluentd.environment.elasticsearch_host }}
+      imagePullSecrets:
+      - name: {{ .Values.fluentd.image.pullSecret }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: {{ template "efkstack.name" . }}-{{ .Values.fluentd.name }}
+    chart: {{ template "efkstack.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  name: "{{ .Chart.Name }}-{{ .Values.fluentd.name }}-svc"
+spec:
+  ports:
+  - name: tcpport
+    protocol: TCP
+    port: 24224
+  - name: udpport
+    protocol: UDP
+    port: 24224
+  selector:
+    app: {{ template "efkstack.name" . }}-{{ .Values.fluentd.name }}
