@@ -14,13 +14,12 @@ spec:
       app: {{ template "efkstack.name" . }}-{{ .Values.fluentd.name }}
   template:
     metadata:
-      name: {{ template "efkstack.name" . }}-{{ .Values.fluentd.name }}
       labels:
         app: {{ template "efkstack.name" . }}-{{ .Values.fluentd.name }}
     spec:
       containers:
       - image: "{{ .Values.fluentd.image.name }}:{{ .Values.fluentd.image.tag }}"
-        name: {{ template "efkstack.name" . }}-{{ .Values.fluentd.name }}
+        name: {{ .Values.fluentd.name }}
         ports:
         - containerPort: 24224
         env:

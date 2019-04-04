@@ -14,13 +14,12 @@ spec:
       app: {{ template "efkstack.name" . }}-{{ .Values.kibana.name }}
   template:
     metadata:
-      name: {{ template "efkstack.name" . }}-{{ .Values.kibana.name }}
       labels:
         app: {{ template "efkstack.name" . }}-{{ .Values.kibana.name }}
     spec:
       containers:
       - image: "{{ .Values.kibana.image.name }}:{{ .Values.kibana.image.tag }}"
-        name: {{ template "efkstack.name" . }}-{{ .Values.kibana.name }}
+        name: {{ .Values.kibana.name }}
         ports:
         - containerPort: 5601
         env:

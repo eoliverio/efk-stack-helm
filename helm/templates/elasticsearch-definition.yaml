@@ -14,13 +14,12 @@ spec:
       app: {{ template "efkstack.name" . }}-{{ .Values.elasticsearch.name }}
   template:
     metadata:
-      name: {{ template "efkstack.name" . }}-{{ .Values.elasticsearch.name }}
       labels:
         app: {{ template "efkstack.name" . }}-{{ .Values.elasticsearch.name }}
     spec:
       containers:
       - image: "{{ .Values.elasticsearch.image.name }}:{{ .Values.elasticsearch.image.tag }}"
-        name: {{ template "efkstack.name" . }}-{{ .Values.elasticsearch.name }}
+        name: {{ .Values.elasticsearch.name }}
         ports:
         - containerPort: 9200
 ---
