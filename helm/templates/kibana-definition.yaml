@@ -14,12 +14,13 @@ spec:
       app: {{ template "efkstack.name" . }}-{{ .Values.kibana.name }}
   template:
     metadata:
+      name: {{ template "efkstack.name" . }}-{{ .Values.kibana.name }}
       labels:
         app: {{ template "efkstack.name" . }}-{{ .Values.kibana.name }}
     spec:
       containers:
       - image: "{{ .Values.kibana.image.name }}:{{ .Values.kibana.image.tag }}"
-        name: {{ .Chart.Name }}-{{ .Values.kibana.name }}
+        name: {{ template "efkstack.name" . }}-{{ .Values.kibana.name }}
         ports:
         - containerPort: 5601
         env:
@@ -34,7 +35,7 @@ metadata:
     chart: {{ template "efkstack.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-  name: "{{ .Chart.Name }}-{{ .Values.kibana.name }}-svc"
+  name: {{ template "efkstack.name" . }}-{{ .Values.kibana.name }}-svc
 spec:
   ports:
   - protocol: TCP
@@ -52,12 +53,12 @@ metadata:
     chart: {{ template "efkstack.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-  name: {{ .Chart.Name }}-{{ .Values.kibana.name }}
+  name: {{ template "efkstack.name" . }}-{{ .Values.kibana.name }}
 spec:
   rules:
-  - host: "{{ .Chart.Name }}-{{ .Values.kibana.name }}.com"
+  - host: {{ template "efkstack.name" . }}-{{ .Values.kibana.name }}.com
     http:
       paths:
       - backend:
-          serviceName: "{{ .Chart.Name }}-{{ .Values.kibana.name }}-svc"
+          serviceName: {{ template "efkstack.name" . }}-{{ .Values.kibana.name }}-svc
           servicePort: 5601

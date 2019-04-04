@@ -14,12 +14,13 @@ spec:
       app: {{ template "efkstack.name" . }}-{{ .Values.elasticsearch.name }}
   template:
     metadata:
+      name: {{ template "efkstack.name" . }}-{{ .Values.elasticsearch.name }}
       labels:
         app: {{ template "efkstack.name" . }}-{{ .Values.elasticsearch.name }}
     spec:
       containers:
       - image: "{{ .Values.elasticsearch.image.name }}:{{ .Values.elasticsearch.image.tag }}"
-        name: {{ .Chart.Name }}-{{ .Values.elasticsearch.name }}
+        name: {{ template "efkstack.name" . }}-{{ .Values.elasticsearch.name }}
         ports:
         - containerPort: 9200
 ---
@@ -31,7 +32,7 @@ metadata:
     chart: {{ template "efkstack.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-  name: "{{ .Chart.Name }}-{{ .Values.elasticsearch.name }}-svc"
+  name: {{ template "efkstack.name" . }}-{{ .Values.elasticsearch.name }}-svc
 spec:
   ports:
   - port: 9200
